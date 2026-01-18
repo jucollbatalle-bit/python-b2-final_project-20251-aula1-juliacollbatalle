@@ -474,43 +474,50 @@ La preparación de datos es un paso crucial en el proceso de análisis de datos.
 
 Comencemos importando los diferentes conjuntos de datos como dataframes utilizando la librería de pandas. Luego, procederemos a presentar los primeros 10 registros.
 """
+import pandas as pd
+try:
+    df_retailbank = pd.read_csv("RetailBankEFG")
+    df_investment = pd.read_csv("InvestmentBankCDE")
+    df_insurance = pd.read_csv("InsuranceCompanyABC")
 
-#Write your code here
-df_retailbank = pd.read_csv("change_path_to_RetailBankEFG")
-
-"""*Realiza la misma acción para InvestmentBankCDE.csv.*"""
-
-#Write your code here
-df_investment = pd.read_csv("change_path_to_InvestmentBankCDE")
-
-"""*Realiza la misma acción para InvestmentBankCDE.csv.*"""
-
-#Write your code here
-df_insurance = pd.read_csv("change_path_to_InsuranceCompanyABC")
+    print('Fitxers carregats correctament.')    #To previsualize the data
+    print(df_retailbank.head())
+    print(df_investment.head())
+    print(df_insurance.head())
 
 """## Pregunta
 *¿Puedes identificar un atributo común entre los diferentes conjuntos de datos que permita juntarlos?*
 """
 
-#Write your code here
+# Unim els dataframes utilitzant la columna comuna 'ID_Client'
+df_consolidat = df_retail.merge(df_investment, on='ID_Client', how='outer')
+df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
+print("Dimensions del dataset consolidat:", df_consolidat.shape)
 
 """## Pregunta
 Indica cuál es la cantidad de registros en cada conjunto de datos.
 
 *¿Qué conclusiones puedes sacar luego de observar los resultados?*
 """
+""" Answere
+Usually, RetailBankEFG has more registers since it is the main base. 
+Also it can be concluded that not all banc clients have their investment products or insurances, as the numbers do not exactly match and it also justifies the use of 'outer merge' in order to not lose any client during the integration."""
 
-#Write your code here
+print(f"Registres RetailBankEFG: {len(df_retail)}")
+print(f"Registres InvestmentBankCDE: {len(df_investment)}")
+print(f"Registres InsuranceCompanyABC: {len(df_insurance)}")
 
 """## Pregunta
 ¿Has notado algún patrón entre los datos, ya sea entre filas o columnas?
+""Answere
+It can be observed that data combines domographic profiles (like age and location) with financial behaviour (salaries and buyings). 
+A common pattern in Open Finance is that more antique clients or the ones with the best score tend to have products in the three institutions, fact that will allow the Machine Learning model to make better recommendations."""
 
 # Evaluación de Calidad de Datos
 
 ## Valores Faltantes:
-Vamos a identificar los valores nulos o faltantes en los conjuntos de datos. Para esto, crearás una función llamada `get_nan_values`. Esta función tomará como parámetro un dataframe y devolverá el número de valores nulos por fila y por columna.
+"""Vamos a identificar los valores nulos o faltantes en los conjuntos de datos. Para esto, crearás una función llamada `get_nan_values`. Esta función tomará como parámetro un dataframe y devolverá el número de valores nulos por fila y por columna.
 """
-
 def get_nan_values(data_frame):
   # Count NaN values in each column
   nan_count_per_column = data_frame.isna().sum()
@@ -520,12 +527,9 @@ def get_nan_values(data_frame):
   return {"Count NaN values in each column":nan_count_per_column,"Total number of records with NaN values":total_nan_records}
 
 """*Imprime los valores faltantes por fila y columna*"""
-
-#Write your code here for df_retailbank
-
-#Write your code here for df_investment
-
-#Write your code here for df_insurance
+print('Nuls a Retail:', get_nan_values(df_retailbank))
+print('Nuls a Investment:', get_nan_values(df_investment))
+print('Nuls a Insurance:', get_nan_values(df_insurance))
 
 """## Pregunta
 *¿Existen valores faltantes en los datos?*
