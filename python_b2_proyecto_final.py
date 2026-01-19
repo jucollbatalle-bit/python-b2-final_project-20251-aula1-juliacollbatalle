@@ -1467,7 +1467,13 @@ Ahora vamos a desarrollar validaciones para ver cuáles características son má
 """
 
 def plot_correlations(df_temp):
-    #Write your code here
+    plt.figure(figsize=(15, 10))
+    # Calculate the correlation matrix
+    corr_matrix = df_temp.corr()
+    # Now we draw the Heatmap
+    sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', linewidths=0.5)
+    plt.title("Matriu de Correlació de les variables")
+    plt.show()
     pass
 
 #Write your code here, plot using plot_correlations
@@ -1535,12 +1541,13 @@ def create_pca_model(X_train, n_components):
     X_principal (DataFrame): The transformed features into principal components.
     """
     # Instantiate PCA
-    #Write your code here
+    pca_model = PCA(n_components=n_components)
     pca_model = None
 
     # Fit PCA to the training data and transform features
-    #Write your code here
+    X_principal = pca_model.fit_transform(X_train)
     X_principal = None
+    X_principal = pd.DataFrame(data=X_principal)
 
     # Return pca_model,X_principal
     return pca_model,X_principal
@@ -1658,10 +1665,18 @@ X_reshaped, y_reshaped = pipeline_fix_imbalance.fit_resample(X, y)
 
 """*Implementa un gráfico tipo pie que muestre cómo lucen los datos después de realizar el tratamiento para abordar el desbalance.*"""
 
-#Write your code here
-#conteo_tipo_financiamiento_label = y_reshaped.value_counts().rename(index=tipo_financiamiento_mapping)
-#conteo_tipo_financiamiento_label.plot.pie()
-#y_reshaped.value_counts()
+conteo_despres = y_reshaped.value_counts()
+
+# Fem el gràfic de pastís
+plt.figure(figsize=(8, 8))
+conteo_despres.plot.pie(autopct='%1.1f%%', startangle=90, cmap='Pastel1')
+plt.title('Distribució de classes després del balanceig (SMOTE + UnderSampling)')
+plt.ylabel('') # Treiem l'etiqueta Y perquè quedi més net
+plt.show()
+
+conteo_tipo_financiamiento_label = y_reshaped.value_counts().rename(index=tipo_financiamiento_mapping)
+conteo_tipo_financiamiento_label.plot.pie()
+y_reshaped.value_counts()
 
 """*Separa los datos en conjuntos de entrenamiento y test utilizando la función `startified_train_test_split()`. Luego, implementa un modelo que haga uso del siguiente clasificador. Puedes probar modificando los hiperparámetros y evaluar los resultados. También puedes optar por modificar los parámetros de las clases `RandomUnderSampler` y `SMOTE` del paso anterior.*
 
