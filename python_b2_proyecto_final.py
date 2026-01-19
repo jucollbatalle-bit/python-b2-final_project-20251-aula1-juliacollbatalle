@@ -574,6 +574,8 @@ print(f'Duplicates in Insurance: {check_duplicates(df_insurance, 'client_id')}')
 
 """## Pregunta
 ¿Existen datos duplicados?
+"" Answere
+S'HA D'EXECUTAR LA FUNCIÓ check_duplicates AMB LA COLUMNA client_id ""
 
 ## Inconsistencias
 En esta sección, se propondrán varios métodos para identificar inconsistencias en los datos. Primero, vamos a revisar las estadísticas básicas. Para ello, utilizaremos la función `describe()`.
@@ -581,14 +583,14 @@ En esta sección, se propondrán varios métodos para identificar inconsistencia
 *Imprime las estadísticas básicas*
 """
 
-#Write your code here for df_retailbank
-
-#Write your code here for df_investment
-
-#Write your code here for df_insurance
+print("Stadistics in Retail:\n", df_retailbank.describe())
+print("\nStadistics in Investment:\n", df_investment.describe())
+print("\nStadistics in Insurance:\n", df_insurance.describe())
 
 """### Identificar Valores Únicos:
-Ahora, para todas las variables no numéricas, debemos identificar cuántos tipos de datos están registrados en cada columna. Implementaremos la función `get_value_counts_non_numeric_columns`, la cual obtiene los conteos de valores de las columnas no numéricas en un DataFrame y devuelve un diccionario donde las claves son los nombres de las columnas no numéricas y los valores son sus respectivos conteos de valores.
+Ahora, para todas las variables no numéricas, debemos identificar cuántos tipos de datos están registrados en cada columna. 
+Implementaremos la función `get_value_counts_non_numeric_columns`, la cual obtiene los conteos de valores de las columnas no numéricas en un DataFrame 
+y devuelve un diccionario donde las claves son los nombres de las columnas no numéricas y los valores son sus respectivos conteos de valores.
 """
 
 def find_non_numeric_columns(df):
@@ -615,37 +617,41 @@ def get_value_counts_non_numeric_columns(df):
     Returns:
     dict: A dictionary where keys are non-numeric column names and values are their respective value counts.
     """
-    # write your code here
-    #Get non-numeric columns
+    non_numeric_columns = find_non_numeric_columns(df)
+    counts_dict = {}
+    for column in non_numeric_columns:
+        counts_dict[column] = df[column].value_counts()
+
+    return counts_dict
     #pass
 
 """*Imprime los conteos de las columnas no numéricas.*"""
 
-#Write your code here for df_retailbank
-get_value_counts_non_numeric_columns(df_retailbank)
-
-#Write your code here for df_investment
-get_value_counts_non_numeric_columns(df_investment)
-
-#Write your code here for df_insurance
-get_value_counts_non_numeric_columns(df_insurance)
+print('Unique values in Retail:\n', get_value_counts_non_numeric_columns(df_retailbank))
+print('Unique values in Investment:\n', get_value_counts_non_numeric_columns(df_investment))
+print('Unique values in Insurance:\n', get_value_counts_non_numeric_columns(df_insurance))
 
 """### Verificar Tipos de Datos:
 *Utiliza el atributo `dtypes` para verificar los tipos de datos de cada columna.*
 """
 
-#Write your code here for df_retailbank
-
-#Write your code here for df_investment
-
-#Write your code here for df_insurance
+print("Tipus de dades a Retail Bank:\n", df_retailbank.dtypes)
+print("\nTipus de dades a Investment Bank:\n", df_investment.dtypes)
+print("\nTipus de dades a Insurance Company:\n", df_insurance.dtypes)
 
 """## Pregunta
 *¿Qué puedes concluir respecto de todas las variables que no son numéricas?*
+Answere
+Non numerical variables represent categorical data like gender or profession. To use them in a Machine Learning model we have to use coding techniques (like One-Hot Encoding or Lable Encoding) to transform them in numerical values.
+
 *¿Has identificado algún patrón o característica?*
+Answere
+Columns which contain categories are read as 'object', unlike financial data (like salaries) are read as 'float'. A clear pattern is that demographic data is concentrated in Retail bank, shile Investment and Insurance provide another data type.
 
 ## Visualización General de los datos y Analizar Patrones Anómalos
-Esta es una sección libre en la que podrás crear diferentes visualizaciones de los datos. Sugiero que utilices principalmente visualizaciones para validar la cantidad de datos de las variables no numéricas. Además, debes realizar gráficas tipo box plot para las columnas numéricas, exceptuando la columna ID.
+Esta es una sección libre en la que podrás crear diferentes visualizaciones de los datos. 
+Sugiero que utilices principalmente visualizaciones para validar la cantidad de datos de las variables no numéricas. 
+Además, debes realizar gráficas tipo box plot para las columnas numéricas, exceptuando la columna ID.
 
 ## Por ejemplo:
 ### Visualizaciones para variables no numéricas:
@@ -656,16 +662,42 @@ Esta es una sección libre en la que podrás crear diferentes visualizaciones de
 - **Box plot para cada columna numérica (excluyendo la columna ID):** Utiliza box plots para visualizar la distribución de los datos, los valores atípicos y la mediana en cada columna numérica.
 """
 
-#Write your code here, add your custom plots for df_retailbank
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-#Write your code here, add your custom plots for df_investment
+def generate_visualizations(df, name):
+    # 1. Non numerical variables (Bar graph)
+    non_numeric = find_non_numeric_columns(df)
+    for col in non_numeric:
+        plt.figure(figsize=(8, 4))
+        df[col].value_counts().plot(kind='bar', color='skyblue')
+        plt.title(f"Distribució de {col} - {name}")
+        plt.show()
 
-#Write your code here, add your custom plots for df_insurance
+    # 2. Numerical variables (Box plots)
+    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
+    if 'client_id' in numeric_cols: numeric_cols.remove('client_id')
+    if 'ID_Client' in numeric_cols: numeric_cols.remove('ID_Client')
+    
+    for col in numeric_cols:
+        plt.figure(figsize=(8, 2))
+        sns.boxplot(x=df[col], color='lightgreen')
+        plt.title(f"Boxplot de {col} - {name}")
+        plt.show()
+
+generate_visualizations(df_retailbank, "Retail Bank")
+generate_visualizations(df_investment, "Investment Bank")
+generate_visualizations(df_insurance, "Insurance Company")
 
 """## Preguntas
 1. *¿Cuál de las dos opciones sugieres utilizar para evaluar datos no numéricos: imprimir los valores o crear visualizaciones?*
+To evaluate non numerical data I would suggest to create visualizations, since they allow to quickly identify unbalanced classes or categories.
+
 2. *¿Qué otros tipos de visualizaciones se te ocurren que podrías sugerir? Justifica tu respuesta.*
+Heatmaps could be aswell used to observe correlation between numerical variables or Scatter plots to se any relation between income and age.
+
 3. *¿Existe un desbalance en los datos, es decir, existen más tipos que corresponden a una clase? ¿Cuál es la clase y cómo crees que esto puede afectar al construir modelos de machine learning?*
+NOTA PERSONAL: S'HA D'OBSERVAR EL GRÀFIC QUAN ES GENERI!!!!
 
 ### Analizar Patrones Anómalos:
 Para realizar el análisis de patrones anómalos, utilizarás la función `plot_boxplot_violinplot`.
@@ -673,15 +705,24 @@ Para realizar el análisis de patrones anómalos, utilizarás la función `plot_
 *Graficar la región(Regiao) en función de la edad(Idade), del conjunto de datos `df_insurance`.*
 """
 
-#Write your code here for df_insurance
+plt.figure(figsize=(10, 6))
+sns.violinplot(x='Regiao', y='Idade', data=df_insurance)
+plt.title("Distribució d'Edat per Regió (Insurance)")
+plt.show()
 
 """ *Graficar la región(Regiao) en función de la edad(Renda), del conjunto de datos `df_insurance`.*"""
 
-#Write your code here for df_insurance
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='Regiao', y='Renda', data=df_insurance)
+plt.title("Distribució de Renda per Regió (Insurance)")
+plt.show()
 
 """## Preguntas
 * *¿Cuál es la distribución de datos sugerida?*
+A distribution is expected where variables such as age follow a Gaussian bell (normal) and income shows an asymmetric distribution to the right (showing a few customers with very high incomes).
+
 * *¿Existen datos atípicos en el conjunto de datos?* *¿Cómo podrías corregir estos datos? Justifica tu respuesta*.
+If isolated points appear outside the 'whiskers' of the box plot, they are outliners. They can be corrected by truncation (winsorizing), eliminating these records if they are errors, or replacing them with the mean/median if they are plausible but extreme values.
 
 # **Pregunta 2 - Limpieza y tratamiento de Datos**
 
@@ -689,7 +730,7 @@ Para realizar el análisis de patrones anómalos, utilizarás la función `plot_
 
 ## Manejo de Valores Faltantes
 
-### Preguntas
+### Preguntas 
 1. *¿Luego de la evaluación es necesario realizar alguna técnica para completar datos faltantes?*
 2. *¿Debemos realizar tareas de imputación de valores luego de analizar los datos?*
 3. *¿Por favor, describe al menos dos técnicas de imputación de datos para valores faltantes basadas en métodos estadísticos?*
@@ -702,7 +743,11 @@ Para realizar el análisis de patrones anómalos, utilizarás la función `plot_
 *Vamos a eliminar los datos duplicados en todos los conjuntos de datos utilizando la función `drop_duplicates`, junto con el parámetro `inplace`.*
 """
 
-#Write your code here
+df_retailbank.drop_duplicates(inplace=True)
+df_investment.drop_duplicates(inplace=True)
+df_insurance.drop_duplicates(inplace=True)
+
+print("✓ Duplicats eliminats correctament en tots els DataFrames.")
 
 """## Pregunta
 
