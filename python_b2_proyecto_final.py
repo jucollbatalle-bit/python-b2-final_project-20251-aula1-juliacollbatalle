@@ -1511,11 +1511,12 @@ def get_most_important_features(correlation_matrix, target_column, n=5):
 
 """
 
-correlation_matrix = data.select_dtypes(include=['number']).corr()
-important_features = get_most_important_features(correlation_matrix, 'target', n=6)
+correlation_matrix = data_frame_tipo_financiamiento.select_dtypes(include=['number']).corr()
+
+most_important_features = get_most_important_features(correlation_matrix, 'target_column', n=6)
 
 print("The 6 most relevant columns are:")
-print(important_features)
+print(most_important_features)
 
 """# Análisis de Componentes Principales(PCA)
 
