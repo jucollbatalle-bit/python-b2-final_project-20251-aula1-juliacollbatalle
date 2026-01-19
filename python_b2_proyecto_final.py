@@ -485,24 +485,39 @@ try:
     print(df_investment.head())
     print(df_insurance.head())
 
+except FileNotFoundError as e:
+    print(f"Error: No s'ha trobat el fitxer. Detalls: {e}")
+except Exception as e:
+    print(f"S'ha produït un error inesperat: {e}")
+
 """## Pregunta
 *¿Puedes identificar un atributo común entre los diferentes conjuntos de datos que permita juntarlos?*
+Yes, the column 'ID_Client' can be used as a common attribute between the datasets.
 """
 
-# Unim els dataframes utilitzant la columna comuna 'ID_Client'
+# Join the dataframes using the common column 'ID_Client'
 df_consolidat = df_retailbank.merge(df_investment, on='ID_Client', how='outer')
 df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
 
-print("Dimensions del dataset consolidat:", df_consolidat.shape)
+print("Dimensions of dataset are consolidated:", df_consolidat.shape)
+
+#To know the quantity of files per each DataFrame
+rows_retail = len(df_retailbank)
+rows_investment = len(df_investment)
+rows_insurance = len(df_insurance)
+
+print(f"Quantitat de registres a Retail Bank: {rows_retail}")
+print(f"Quantitat de registres a Investment Bank: {rows_investment}")
+print(f"Quantitat de registres a Insurance Company: {rows_insurance}")
 
 """## Pregunta
 Indica cuál es la cantidad de registros en cada conjunto de datos.
+MIRAR-HO AMB LES DADES QUAN ES CORRI EL PROGRAMA
 
 *¿Qué conclusiones puedes sacar luego de observar los resultados?*
-"""
-"""## Answere
 Usually, RetailBankEFG has more registers since it is the main base. 
-Also it can be concluded that not all banc clients have their investment products or insurances, as the numbers do not exactly match and it also justifies the use of 'outer merge' in order to not lose any client during the integration."""
+Also it can be concluded that not all banc clients have their investment products or insurances, as the numbers do not exactly match and it also justifies the use of 'outer merge' in order to not lose any client during the integration.
+"""
 
 print(f"Registres RetailBankEFG: {len(df_retailbank)}")
 print(f"Registres InvestmentBankCDE: {len(df_investment)}")
@@ -510,7 +525,6 @@ print(f"Registres InsuranceCompanyABC: {len(df_insurance)}")
 
 """## Pregunta
 ¿Has notado algún patrón entre los datos, ya sea entre filas o columnas?
-""Answere
 It can be observed that data combines domographic profiles (like age and location) with financial behaviour (salaries and buyings). 
 A common pattern in Open Finance is that more antique clients or the ones with the best score tend to have products in the three institutions, fact that will allow the Machine Learning model to make better recommendations."""
 
