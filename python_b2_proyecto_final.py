@@ -490,7 +490,7 @@ try:
 """
 
 # Unim els dataframes utilitzant la columna comuna 'ID_Client'
-df_consolidat = df_retail.merge(df_investment, on='ID_Client', how='outer')
+df_consolidat = df_retailbank.merge(df_investment, on='ID_Client', how='outer')
 df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
 
 print("Dimensions del dataset consolidat:", df_consolidat.shape)
@@ -504,7 +504,7 @@ Indica cuál es la cantidad de registros en cada conjunto de datos.
 Usually, RetailBankEFG has more registers since it is the main base. 
 Also it can be concluded that not all banc clients have their investment products or insurances, as the numbers do not exactly match and it also justifies the use of 'outer merge' in order to not lose any client during the integration."""
 
-print(f"Registres RetailBankEFG: {len(df_retail)}")
+print(f"Registres RetailBankEFG: {len(df_retailbank)}")
 print(f"Registres InvestmentBankCDE: {len(df_investment)}")
 print(f"Registres InsuranceCompanyABC: {len(df_insurance)}")
 
@@ -983,8 +983,12 @@ class DataScaleImputer(BaseEstimator, TransformerMixin):
         data = X.copy()  # Make a copy of the input DataFrame to avoid modifying the original
 
         # Create a ColumnTransformer that will apply StandardScaler only to the specified columns
-        # Write you code here, change None by custom transformer
-        transformer = None
+        from sklearn.compose import ColumnTransformer
+
+        transformer = ColumnTransformer(
+            [('scaler', self.scaler, self.columns)],
+            remainder='passthrough'
+        )
 
         # Apply the transformer to the data
         X_transform = transformer.fit_transform(data)
@@ -999,11 +1003,13 @@ class DataScaleImputer(BaseEstimator, TransformerMixin):
 
 """*Ejecuta la transformación utilizando la clase `DataScaleImputer` y asigna el resultado a `df_insurance`*"""
 
-# Write you code here
+scaler_imputer = DataScaleImputer(columns=['Idade', 'Renda'])
+df_insurance = scaler_imputer.fit_transform(df_insurance)
 
 """*Imprime las estadísticas básicas del conjunto de datos df_insurance, ubásicas utilizando el método `describe()`*"""
 
-# Write you code here
+print("Stadistics of df_insurance after scaling:")
+print(df_insurance[['Idade', 'Renda']].describe())
 
 """## Pregunta
 *¿Cuáles otras técnicas conoces que pueden ser utilizadas para escalar o normalizar los datos? Menciona dos.*
