@@ -655,11 +655,9 @@ print("\nTipus de dades a Insurance Company:\n", df_insurance.dtypes)
 
 """## Pregunta
 *¿Qué puedes concluir respecto de todas las variables que no son numéricas?*
-Answere
 Non numerical variables represent categorical data like gender or profession. To use them in a Machine Learning model we have to use coding techniques (like One-Hot Encoding or Lable Encoding) to transform them in numerical values.
 
 *¿Has identificado algún patrón o característica?*
-Answere
 Columns which contain categories are read as 'object', unlike financial data (like salaries) are read as 'float'. A clear pattern is that demographic data is concentrated in Retail bank, shile Investment and Insurance provide another data type.
 
 ## Visualización General de los datos y Analizar Patrones Anómalos
