@@ -1717,8 +1717,32 @@ plot_confusion_matrix(confusion_matrix(y_test, y_pred),tipo_financiamiento_mappi
 
 """# Pregunta 4
 * *¿Cuál de los modelos consideras que es más eficiente en términos de rendimiento y por qué?*
-* *Luego de evaluar los diferentes modelos, como científico de datos, ¿cuál sugerirías implementar y por qué? Justifica tu respuesta.*
-* *Investiga qué otras opciones pueden ser utilizadas para enfrentar el problema de datos desbalanceados e implementa un ejemplo.*
-* *Investiga qué son los modelos de ensamble e implementa un corto ejemplo.*
+Efficiency must be measured both in terms of predictive accuracy and computational cost. Generally, Random Forest tends to be more efficient for this type of financial dataset because it handles non-linear relationships and categorical data effectively without requiring extensice scaling.
+While SVM (Support Vector Machines) can be very precise, it is computationally more expensive as the dataset grows. Therefore, if the performance (F1-Score and Accuracy) is similar, Random Forest is usually the more efficient choice for production environments.
 
+* *Luego de evaluar los diferentes modelos, como científico de datos, ¿cuál sugerirías implementar y por qué? Justifica tu respuesta.*
+I would suggest implementing the Random Forest Classifier for the next three reasons:
+- Robustness: it is less prone to overfitting compared to single decision trees thanks to ensamble averaging.
+- Feature Importance: it provides clear insights into which variables are driving the financing recommendations, which is crucial for financial transparency.
+- Handling mix data: it performs very well with the mix of numerical and encoded categorical variables we processed in Pregunta 2.
+
+* *Investiga qué otras opciones pueden ser utilizadas para enfrentar el problema de datos desbalanceados e implementa un ejemplo.*
+From what I have found, to handle imbalanced data we can use techniques like Oversampling (SMOTE), Undersampling, or adjusting Class Weights within the model.
+
+An example using Class Weights:
+from sklearn.ensemble import RandomForestClassifier
+# We assign more weight to the minority classes automatically
+model = RandomForestClassifier(class_weight='balanced', n_estimators=100)
+model.fit(X_train, y_train)
+
+* *Investiga qué son los modelos de ensamble e implementa un corto ejemplo.*
+Ensamble models are a machine learning approach that combines multiple individual modles (often called 'weak learners') to create a single 'strong learner' with better predictive performances. The two main types are Bagging (like Random Forest) and Boosting (like XGBoost).
+
+An example of ensamble model (Voting Classifier):
+from sklearn.ensemble import VotingClassifier
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+
+Finally, it is possible to combine both models (Voting Classifier and RandomForestClassifier) to optimize the final result:
+ensemble_model = VotingClassifier(estimators=[ ('rf', RandomForestClassifier()), ('svc', SVC(probability=True)) ], voting='soft')
 """
