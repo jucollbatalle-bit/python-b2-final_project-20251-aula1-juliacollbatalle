@@ -1748,13 +1748,17 @@ steps_gradient_boost = [
 ]
 
 # Create the pipeline for Gradient Boosting
-# Write your code here
+from imblearn.pipeline import Pipeline
+
+# We create the object 'pipeline'
+pipeline_gb = Pipeline(steps=steps_gradient_boost)
 
 # Train the model using fit
-# Write your code here
+pipeline_gb.fit(X_train, y_train)
 
 # Make predictions
-# Write your code here
+y_pred = pipeline_gb.predict(X_test)
+print(y_pred[:10]) #To test our firsts predictions
 
 """Evaluemos los resultados del modelo."""
 
