@@ -1018,24 +1018,33 @@ print(df_insurance[['Idade', 'Renda']].describe())
 
 ## Unificación de conjuntos de datos
 
-Vamos a unificar diferentes conjuntos de datos (`df_insurance`, `df_retailbank` y `df_investment`) para crear un nuevo DataFrame. Utilizaremos la función `merge` de Pandas, identificando previamente el atributo que nos permitirá integrar estos conjuntos como uno solo. El resultado final se asignará a la variable `data_frame_merged`. A continuación, mostraremos los primeros 10 registros.
+Vamos a unificar diferentes conjuntos de datos (`df_insurance`, `df_retailbank` y `df_investment`) para crear un nuevo DataFrame. 
+Utilizaremos la función `merge` de Pandas, identificando previamente el atributo que nos permitirá integrar estos conjuntos como uno solo. 
+El resultado final se asignará a la variable `data_frame_merged`. A continuación, mostraremos los primeros 10 registros.
 
 *Utiliza la función `merge` de Pandas para fusionar los conjuntos de datos en uno solo, asignándolo a la variable `data_frame_merged`.*
 """
 
-# Write you code here
+data_frame_merged = df_retailbank.merge(df_investment, on='client_id', how='left')
+data_frame_merged = data_frame_merged.merge(df_insurance, on='client_id', how='left')
 
 """*Imprime la cantidad total de registros después de realizar el merge entre los conjuntos de datos.*"""
 
-# Write you code here
+print("First 10 records of the unified dataset:")
+print(data_frame_merged.head(10)) #The first 10 registers are printed to verify function 'merge' has worked properly
+
+print(f"Total of registers after merge: {len(data_frame_merged)}") #Now we print all registers
+
 
 """*Observamos una visión estadística rápida de los datos mediante la función `describe`.*"""
 
-# Write you code here
+print("\nStatistical summary of the unified dataset:")
+print(data_frame_merged.describe())
 
 """*Verifica si hay datos faltantes en el DataFrame resultante.*"""
 
-# Write you code here
+print("\nMissing data per column in the unified DataFrame:")
+print(data_frame_merged.isna().sum())
 
 """# Correcion nombres columnas
 
@@ -1043,6 +1052,8 @@ Como has notado, se presentan ciertos inconvenientes en los nombres de las colum
 """
 
 data_frame_merged = data_frame_merged.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x))
+data_frame_merged.info()
+print("\nInformació final del DataFrame (tramitament de dades finalitzat):")
 data_frame_merged.info()
 
 """## Finalización tramiento de datos
@@ -1289,17 +1300,21 @@ tipo_financiamiento_mapping
 
 """*Imprime las estadísticas básicas del conjunto de datos `data_frame_tipo_financiamiento`*"""
 
-# Write you code here
+print(f'Results from data merge:\n{data_frame_tipo_financiamiento.describe()}')
 
 """## Cierre tratamiento de datos
-Es crucial comprender que el tratamiento de datos no es solo una etapa preliminar, sino un proceso continuo que puede influir significativamente en el rendimiento y la precisión de los modelos de Machine Learning. Al abordar de manera efectiva problemas como valores faltantes, valores atípicos y errores de formato, estamos creando un conjunto de datos robusto y confiable, lo que a su vez potencia la capacidad predictiva de nuestros modelos.
+Es crucial comprender que el tratamiento de datos no es solo una etapa preliminar, sino un proceso continuo que puede influir significativamente en el rendimiento y la precisión de los modelos de Machine Learning. 
+Al abordar de manera efectiva problemas como valores faltantes, valores atípicos y errores de formato, estamos creando un conjunto de datos robusto y confiable, 
+lo que a su vez potencia la capacidad predictiva de nuestros modelos.
 
 Hasta este punto, hemos completado varios pasos relacionados con el tratamiento y la limpieza de datos. Ahora vamos a continuar con el desarrollo de los diferentes algoritmos de Machine Learning.
 
 *Exporta el DataFrame data_frame_tipo_financiamiento a un archivo CSV sin incluir el índice*
 """
 
-# Write you code here
+data_frame_tipo_financiamiento.to_csv("data_frame_final_procesado.csv", index=False)
+
+print("✓ El fitxer 'data_frame_final_procesado.csv' s'ha exportat correctament.")
 
 """# **Pregunta 3 - Creación de modelos de Machine Learning**
 
