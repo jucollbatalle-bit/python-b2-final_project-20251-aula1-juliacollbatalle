@@ -732,9 +732,18 @@ If isolated points appear outside the 'whiskers' of the box plot, they are outli
 
 ### Preguntas 
 1. *¿Luego de la evaluación es necesario realizar alguna técnica para completar datos faltantes?*
+Yes. Since NaN values were detected during the evaluation, it is necessary to apply 'clean techniques'. Otherwise most Machine Learning algorithms would produce an error or would lose precision.
+
 2. *¿Debemos realizar tareas de imputación de valores luego de analizar los datos?*
+Yes, imputation allows us to mantain the size of the data set. Deleting entire rows just because one data point is missing can caouse us to lose valuable information formother columns that are complete.
+
 3. *¿Por favor, describe al menos dos técnicas de imputación de datos para valores faltantes basadas en métodos estadísticos?*
+- Mean/Median Imputation: nulls are replaced by the average value of the column (for numeric variables).
+- Mode Imputation: the most frequent value is used, ideal for categorical variables such as 'Gender' or 'Region'.
+
 4. *¿Por favor, describe al menos dos técnicas de imputación de datos para valores faltantes basadas en métodos predictivos?*
+- K-Nearest Neighbors (KNN Imputer): The algorithm lookds for the 'neighbors' most similar to the customer who has the missing data and fills de gap based on their values.
+- Regression Imputation: A linear regression model is used to predict the missing value of a column based on the other available variables.
 
 ## Eliminación de Duplicados
 
@@ -752,6 +761,7 @@ print("✓ Duplicats eliminats correctament en tots els DataFrames.")
 """## Pregunta
 
 *¿Por qué es importante llevar a cabo la tarea de eliminación de duplicados? Por favor, justifica tu respuesta.*
+Duplicates distort statistics and can cause what we call overfitting. If the Machine Learning model 'sees' the same information repeated several times, it will believe that these patterns are more important than they really are, losing the ability to generalize to new customers.
 
 # Ingeniería de características
 
@@ -853,7 +863,10 @@ plot_count_plots(df_insurance,["AGE_RANGE","INCOME_RANGE"])
 A continuación vamos a normalizar los datos numéricos. Luego convertiremos las variables categóricas de Falso (F) y Verdadero (T) a valores numéricos binarios: 0 para Falso y 1 para Verdadero.
 
 ### Reemplazar Valores Erróneos:
-Como pudiste observar en las gráficas anteriores, existen diferentes valores atípicos que se encuentran fuera del rango. Para abordar esto, vamos a crear una opción que nos permita excluir los datos atípicos de nuestro conjunto de datos `df_insurance`. Para tomar esta decisión, eliminaremos todos los registros que sean menores al primer cuartil y todos aquellos mayores al tercer cuartil. El resultado final se asignará al DataFrame `df_insurance`. Para llevar a cabo este proceso, haremos uso de la clase `OutlierRemover`.
+Como pudiste observar en las gráficas anteriores, existen diferentes valores atípicos que se encuentran fuera del rango. 
+Para abordar esto, vamos a crear una opción que nos permita excluir los datos atípicos de nuestro conjunto de datos `df_insurance`. 
+Para tomar esta decisión, eliminaremos todos los registros que sean menores al primer cuartil y todos aquellos mayores al tercer cuartil. 
+El resultado final se asignará al DataFrame `df_insurance`. Para llevar a cabo este proceso, haremos uso de la clase `OutlierRemover`.
 """
 
 # Custom transformer to remove outliers from specified columns
@@ -900,16 +913,28 @@ class OutlierRemover(BaseEstimator, TransformerMixin):
 
 """*Ejecuta la transformación utilizando la clase `OutlierRemover` y asigna el resultado a `df_insurance`*"""
 
-#Write your code here
+outlier_remover = OutlierRemover(threshold=1.5)
+
+df_insurance = outlier_remover.fit_transform(df_insurance)
+
+print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
 
 """## Pregunta
 Después de eliminar los datos atípicos, ¿cuántos registros tiene ahora el DataFrame `df_insurance`?
 """
 
-#Write your code here
+remover = OutlierRemover()
+
+df_insurance = remover.fit_transform(df_insurance)
+
+print(f'Current number of registers: {len(df_insurance)}')
 
 """## Pregunta
-*Explica con tus propias palabras cómo podría afectar una diferencia significativa en el tamaño del conjunto de datos antes y después de eliminar los valores atípicos. ¿Qué implicaciones podría tener esto en los resultados de un modelo de machine learning?*
+*Explica con tus propias palabras cómo podría afectar una diferencia significativa en el tamaño del conjunto de datos antes y después de eliminar los valores atípicos. 
+A very drastic reduction in the data set would indicate that our filtering criteria are too strict or that the original data was of very low quality. If we lose too many records, the machine learning model could suffer from underfitting, as it would not have enough examples to learn the general patterns of customers.
+
+¿Qué implicaciones podría tener esto en los resultados de un modelo de machine learning?*
+Removing outliers improve the accuracy of the model by preventing erroneus or extreme data from 'confusing' the algorithm. However, if we remove data that is actually real (albeit extrem), the model will lose its ability to correctly predict customers with unusual profiles.
 
 ## Gráficos luego de eliminar datos atípicos
 
@@ -929,7 +954,9 @@ En las siguientes gráficas, puedes observar las diferencias con respecto a las 
 
 ## Normalización y Escalado
 ### Estandarización:
-Vamos a convertir los datos numéricos a una escala común. Para esto, vamos a aplicar la estandarización sobre las columnas numéricas "Idade" y "Renda". Luego, para ajustar la escala, vamos a utilizar las clases StandardScaler y ColumnTransformer. Debes implementar el código necesario para realizar la conversión.
+Vamos a convertir los datos numéricos a una escala común. 
+Para esto, vamos a aplicar la estandarización sobre las columnas numéricas "Idade" y "Renda". 
+Luego, para ajustar la escala, vamos a utilizar las clases StandardScaler y ColumnTransformer. Debes implementar el código necesario para realizar la conversión.
 
 Para la clase DataScaleImputer, debes investigar un poco cómo realizar la conversión a una escala estándar (StandardScaler) mediante el uso de la clase ColumnTransformer. Puedes revisar la documentación oficial de sklearn.
 
