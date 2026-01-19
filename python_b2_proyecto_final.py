@@ -492,6 +492,7 @@ try:
 # Unim els dataframes utilitzant la columna comuna 'ID_Client'
 df_consolidat = df_retail.merge(df_investment, on='ID_Client', how='outer')
 df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
+
 print("Dimensions del dataset consolidat:", df_consolidat.shape)
 
 """## Pregunta
@@ -499,7 +500,7 @@ Indica cuál es la cantidad de registros en cada conjunto de datos.
 
 *¿Qué conclusiones puedes sacar luego de observar los resultados?*
 """
-""" Answere
+"""## Answere
 Usually, RetailBankEFG has more registers since it is the main base. 
 Also it can be concluded that not all banc clients have their investment products or insurances, as the numbers do not exactly match and it also justifies the use of 'outer merge' in order to not lose any client during the integration."""
 
@@ -515,9 +516,11 @@ A common pattern in Open Finance is that more antique clients or the ones with t
 
 # Evaluación de Calidad de Datos
 
-## Valores Faltantes:
-"""Vamos a identificar los valores nulos o faltantes en los conjuntos de datos. Para esto, crearás una función llamada `get_nan_values`. Esta función tomará como parámetro un dataframe y devolverá el número de valores nulos por fila y por columna.
+"""## Valores Faltantes:
+Vamos a identificar los valores nulos o faltantes en los conjuntos de datos. 
+Para esto, crearás una función llamada `get_nan_values`. Esta función tomará como parámetro un dataframe y devolverá el número de valores nulos por fila y por columna.
 """
+
 def get_nan_values(data_frame):
   # Count NaN values in each column
   nan_count_per_column = data_frame.isna().sum()
@@ -527,6 +530,7 @@ def get_nan_values(data_frame):
   return {"Count NaN values in each column":nan_count_per_column,"Total number of records with NaN values":total_nan_records}
 
 """*Imprime los valores faltantes por fila y columna*"""
+
 print('Nuls a Retail:', get_nan_values(df_retailbank))
 print('Nuls a Investment:', get_nan_values(df_investment))
 print('Nuls a Insurance:', get_nan_values(df_insurance))
@@ -534,8 +538,13 @@ print('Nuls a Insurance:', get_nan_values(df_insurance))
 """## Pregunta
 *¿Existen valores faltantes en los datos?*
 
+"" Answere
+Yes, they usually appear after the data integration between different institutions, since some clients only have presence in one or two databases ""
+
 ## Duplicados
-Vamos a detectar si existen filas duplicadas que pueden distorsionar los análisis. Para ello, vamos a validar si hay registros duplicados en el conjunto de datos utilizando la función `check_duplicates`. En caso afirmativo, necesitaremos pasar como parámetros el dataframe a validar y la columna que se utiliza como identificador.
+Vamos a detectar si existen filas duplicadas que pueden distorsionar los análisis. 
+Para ello, vamos a validar si hay registros duplicados en el conjunto de datos utilizando la función `check_duplicates`. 
+En caso afirmativo, necesitaremos pasar como parámetros el dataframe a validar y la columna que se utiliza como identificador.
 """
 
 def check_duplicates(data_frame, column):
@@ -559,7 +568,9 @@ def check_duplicates(data_frame, column):
 
 """*Imprime la cantidad de filas duplicadas para df_retailbank, df_investment y df_insurance*"""
 
-#Write your code here
+print(f'Duplicates in Retail: {check_duplicates(df_retailbank, 'client_id')}')
+print(f'Duplicates in Investment: {check_duplicates(df_investment, 'client_id')}')
+print(f'Duplicates in Insurance: {check_duplicates(df_insurance, 'client_id')}')
 
 """## Pregunta
 ¿Existen datos duplicados?
