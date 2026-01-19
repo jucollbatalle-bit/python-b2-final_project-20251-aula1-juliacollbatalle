@@ -475,20 +475,27 @@ La preparación de datos es un paso crucial en el proceso de análisis de datos.
 Comencemos importando los diferentes conjuntos de datos como dataframes utilizando la librería de pandas. Luego, procederemos a presentar los primeros 10 registros.
 """
 import pandas as pd
-try:
-    df_retailbank = pd.read_csv("RetailBankEFG")
-    df_investment = pd.read_csv("InvestmentBankCDE")
-    df_insurance = pd.read_csv("InsuranceCompanyABC")
+import os
+import sys
 
-    print('Fitxers carregats correctament.')    #To previsualize the data
+# This line helps Python to find the files
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    df_retailbank = pd.read_csv("RetailBankEFG.csv")
+    df_investment = pd.read_csv("InvestmentBankCDE.csv")
+    df_insurance = pd.read_csv("InsuranceCompanyABC.csv")
+
+    print('Fitxers carregats correctament.')    
     print(df_retailbank.head())
-    print(df_investment.head())
-    print(df_insurance.head())
 
 except FileNotFoundError as e:
-    print(f"Error: No s'ha trobat el fitxer. Detalls: {e}")
+    print(f"Error CRÍTIC: No s'ha trobat el fitxer. Detalls: {e}")
+    print("Revisa que el nom sigui EXACTE i que acabi en .csv")
+    sys.exit() # Stops the program here if files are not found
 except Exception as e:
     print(f"S'ha produït un error inesperat: {e}")
+    sys.exit()
 
 """## Pregunta
 *¿Puedes identificar un atributo común entre los diferentes conjuntos de datos que permita juntarlos?*
@@ -1344,9 +1351,12 @@ Utiliza técnicas de validación cruzada para obtener estimaciones más robustas
 *¿Cuál es el tipo de problema que estás enfrentando: clasificación o regresión? Imprime o grafica el conteo de valores que corresponde a la columna `data_frame_tipo_financiamiento`.*
 """
 
-# Write you code here
+plt.figure(figsize=(10,6))
+sns.countplot(x='tipo_financiamiento', data=data_frame_tipo_financiamiento)
+plt.title('Distribució de la variable objectiu (Target)')
+plt.show()
 
-# Write you code here, add your custom plot
+print(data_frame_tipo_financiamiento['tipo_financiamiento'].value_counts())
 
 """## Pasos para el entrenamiento de modelos
 
@@ -1366,34 +1376,40 @@ A continuación, desarrolla los siguientes pasos para cada uno de los modelos so
 # Assuming your data is stored in a DataFrame called 'data_frame_tipo_financiamiento'
 # and the target variable is in a column called 'tipo_financiamiento'
 # Replace 'data_frame_tipo_financiamiento' and 'tipo_financiamiento' with your actual DataFrame and column names
-# Write you code here
+X = data_frame_tipo_financiamiento.drop(columns=['tipo_financiamiento'])
+y = data_frame_tipo_financiamiento['tipo_financiamiento']
 
 # Split the data into training and testing sets using startified_train_test_split
 # You can adjust the test_size parameter as needed
 # 'random_state' ensures reproducibility of results
-# Write you code here
+X_train, X_test, y_train, y_test = startified_train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Create the custom model
 # You can customize the parameters based on your requirements
-# Write you code here
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
 
 # Train the model on the training data
-# Write you code here
+rf_model.fit(X_train, y_train)
 
 # Make predictions on the testing data
-# Write you code here
+y_pred = rf_model.predict(X_test)
 
 """### **Evaluación del modelo - (Nombre Modelo)**"""
 
 # Evaluate accuracy the model
-# Write you code here
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy del model Random Forest: {accuracy}")
 
 # Plot accuracy the model over the time - use plot_accuracy_scores
-#plot_accuracy_scores(rf_model,X_train,y_train,X_test,y_test,nparts=5,jobs=2)
+plot_accuracy_scores(rf_model,X_train,y_train,X_test,y_test,nparts=5,jobs=2)
 
 # Print classifitacion report using classification_report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
 
 # Plot confusion matrix using plot_confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+plot_confusion_matrix(cm, mapping=tipo_financiamiento_mapping, title='Confusion matrix - Random Forest')
 
 """### **Pasos para el entrenamiento del modelo  a comparar - (LogisticRegression)**"""
 
