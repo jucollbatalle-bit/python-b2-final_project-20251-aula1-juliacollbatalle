@@ -943,14 +943,19 @@ En las siguientes gráficas, puedes observar las diferencias con respecto a las 
 *Graficar la región(Regiao) en función de la edad(Idade), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*
 """
 
-#Write your code here
+plot_boxplot_violinplot(df_insurance, 'Regiao', 'Idade')
 
 """ *Graficar la región(Regiao) en función de los ingresos(Renda), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*"""
 
-#Write your code here, add you plot using ´plot_boxplot_violinplot´
+plot_boxplot_violinplot(df_insurance, 'Regiao', 'Renda')
 
 """## Pregunta
-*¿Cómo crees que la eliminación de datos atípicos ha afectado la distribución y los patrones observados en las gráficas? ¿Qué cambios específicos puedes identificar en los datos después de esta eliminación?*
+*¿Cómo crees que la eliminación de datos atípicos ha afectado la distribución y los patrones observados en las gráficas? 
+After the removal, it is observed that the 'whiskers' of the box plots have become shorter and the distribution is more compact. This means that the variance of the data has decreased, focusing the analysis on the behavior of the majority of the customer population.
+
+¿Qué cambios específicos puedes identificar en los datos después de esta eliminación?*
+It is identified that the extremely high income values that distorted the average have disappeared. The relationship between age and region is now clearer, allowing the classification model to better identify which financing to offer to each segment without statistical noise.
+
 
 ## Normalización y Escalado
 ### Estandarización:
