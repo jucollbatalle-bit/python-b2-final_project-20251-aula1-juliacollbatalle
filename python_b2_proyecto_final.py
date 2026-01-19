@@ -1476,7 +1476,6 @@ def plot_correlations(df_temp):
     plt.show()
     pass
 
-#Write your code here, plot using plot_correlations
 plot_correlations(data_frame_tipo_financiamiento)
 
 """## Pregunta
@@ -1710,7 +1709,15 @@ GradientBoostingClassifier(
 
 # Split the data into training and testing sets with stratification
 # Stratification ensures that the class distribution is preserved in both training and testing sets
-# Write your code here
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, 
+    y, 
+    test_size=0.2,          # 20% of the data will go to the test
+    random_state=42,        # To make the result reproducible
+    stratify=y              # This is the key to maintaining class proportions
+)
 
 
 # Define the steps for the pipeline
