@@ -1013,6 +1013,8 @@ print(df_insurance[['Idade', 'Renda']].describe())
 
 """## Pregunta
 *¿Cuáles otras técnicas conoces que pueden ser utilizadas para escalar o normalizar los datos? Menciona dos.*
+- Min-Max Scaling (Normalization). This technique transforms the data into a fixed range (usually [0,1]). It is calculated by subtracting the minimum value and dividing by the range (max-min).
+- Robust scaling. This method uses the median and the Interquartile Range (IQR) for scaling, rather than the mean and standard deviation. Since it relies on percentiles, it is very effective when datasets have outliers unremoved.
 
 ## Unificación de conjuntos de datos
 
