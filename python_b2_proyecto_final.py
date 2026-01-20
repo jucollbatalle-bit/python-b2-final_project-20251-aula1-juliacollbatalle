@@ -578,7 +578,7 @@ print('Nuls a Insurance:', get_nan_values(df_insurance))
 *¿Existen valores faltantes en los datos?*
 
 "" Answere
-Yes, they usually appear after the data integration between different institutions, since some clients only have presence in one or two databases ""
+they usually appear after the data integration between different institutions, since some clients only have presence in one or two databases. However in this case it appears to not be any missing data. ""
 
 ## Duplicados
 Vamos a detectar si existen filas duplicadas que pueden distorsionar los análisis. 
@@ -613,8 +613,7 @@ print(f"Duplicates in Insurance: {check_duplicates(df_insurance, 'ID_Client')}")
 
 """## Pregunta
 ¿Existen datos duplicados?
-"" Answere
-S'HA D'EXECUTAR LA FUNCIÓ check_duplicates AMB LA COLUMNA client_id ""
+Yes, according to the Terminal there are 552 duplicated data.
 
 ## Inconsistencias
 En esta sección, se propondrán varios métodos para identificar inconsistencias en los datos. Primero, vamos a revisar las estadísticas básicas. Para ello, utilizaremos la función `describe()`.
