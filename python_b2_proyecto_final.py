@@ -1485,8 +1485,8 @@ X_train, X_test, y_train, y_test = startified_train_test_split(X, y, test_size=0
 # Create the Random LogisticRegression
 # You can customize the parameters based on your requirements
 lr_model = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-                   intercept_scaling=1, l1_ratio=None, max_iter=1000,
-                   multi_class='multinomial', n_jobs=None, penalty='l2',
+                   intercept_scaling=1, l1_ratio=None, max_iter=1000, 
+                   n_jobs=None, penalty='l2',
                    random_state=1355, solver='lbfgs', tol=0.0001, verbose=0,
                    warm_start=False)
 
