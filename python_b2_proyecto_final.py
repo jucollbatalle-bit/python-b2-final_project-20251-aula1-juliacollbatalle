@@ -189,7 +189,7 @@ X_principal = None
 A continuación se presentan algunas funciones para gráficar que pueden ser útiles.
 """
 
-def plot_boxplot_violinplot(x, y, data_frame):
+def plot_boxplot_violinplot(data_frame,x, y,):
     """
     Plot both boxplot and violinplot for comparison.
 
@@ -201,8 +201,13 @@ def plot_boxplot_violinplot(x, y, data_frame):
     Returns:
     None
     """
+    # Security lines
+    data_frame = data_frame.copy()
+    data_frame[y] = pd.to_numeric(data_frame[y], errors='coerce')
+    data_frame = data_frame.dropna(subset=[x, y])
+
     # Set figure size
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(15, 6))
 
     # Create subplots
     fig, axes = plt.subplots(2, 1)
@@ -212,10 +217,12 @@ def plot_boxplot_violinplot(x, y, data_frame):
         ax.tick_params(axis='x', rotation=70)
 
     # Plot violinplot
-    sns.violinplot(data=data_frame, x=x, y=y, ax=axes[0])
+    sns.violinplot(data=data_frame, x=x, y=y, ax=axes[1])
+    axes[1].set_title(f'Violin Plot de {y} por {x}')
 
     # Plot boxplot
-    sns.boxplot(data=data_frame, x=x, y=y, ax=axes[1])
+    sns.boxplot(data=data_frame, x=x, y=y, ax=axes[0])
+    axes[0].set_title(f'Boxplot de {y} por {x}')
 
     # Adjust layout
     plt.tight_layout()
@@ -948,23 +955,20 @@ class OutlierRemover(BaseEstimator, TransformerMixin):
         return X.dropna()
 
 """*Ejecuta la transformación utilizando la clase `OutlierRemover` y asigna el resultado a `df_insurance`*"""
+columns_with_outliers = ['Idade', 'Renda']
+outlier_remover = OutlierRemover(threshold=1.5, columns=columns_with_outliers)
 
-outlier_remover = OutlierRemover(threshold=1.5)
+df_insurance = outlier_remover.fit_transform(df_insurance)
 
-df_insurance_numeric = df_insurance.select_dtypes(include=['number'])
-df_insurance = outlier_remover.fit_transform(df_insurance_numeric)
-
+print("Current columns:", df_insurance.columns.tolist())
 print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
 
 """## Pregunta
 Después de eliminar los datos atípicos, ¿cuántos registros tiene ahora el DataFrame `df_insurance`?
+Dimensions of the DataFrame of 'df_insurance' are (9717, 11)
 """
-
-remover = OutlierRemover()
-
-df_insurance = remover.fit_transform(df_insurance)
-
-print(f'Current number of registers: {len(df_insurance)}')
+print("Current columns:", df_insurance.columns.tolist())
+print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
 
 """## Pregunta
 *Explica con tus propias palabras cómo podría afectar una diferencia significativa en el tamaño del conjunto de datos antes y después de eliminar los valores atípicos. 
@@ -978,16 +982,36 @@ Removing outliers improve the accuracy of the model by preventing erroneus or ex
 En las siguientes gráficas, puedes observar las diferencias con respecto a las del apartado inicial "Analizar Patrones Anómalos".
 
 *Graficar la región(Regiao) en función de la edad(Idade), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*
-"""
-df_insurance = df_insurance.dropna(subset=['Regiao', 'Idade'])
-df_insurance['Idade'] = pd.to_numeric(df_insurance['Idade'], errors='coerce')
-df_insurance = df_insurance.dropna(subset=['Idade'])
+
+*Graficar la región(Regiao) en función de los ingresos(Renda), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*"""
+
+# --- REPARACIÓ FINAL ---
+print("Iniciant anàlisi de gràfics final...")
+
+# 1. Comprovem si df_insurance existeix i té dades
+if 'df_insurance' in locals() and isinstance(df_insurance, pd.DataFrame):
+    # Intentem netejar les dades sense sobreescriure el DF original de moment
+    df_temp = df_insurance.copy()
     
-plot_boxplot_violinplot(df_insurance, 'Regiao', 'Idade')
+    # Verifiquem noms de columnes per evitar KeyErrors
+    print(f"Columnes detectades: {df_temp.columns.tolist()}")
+    
+    # Forcem la conversió a número
+    if 'Idade' in df_temp.columns:
+        df_temp['Idade'] = pd.to_numeric(df_temp['Idade'], errors='coerce')
+    
+    # Netegem files buides
+    df_ready = df_temp.dropna(subset=[col for col in ['Regiao', 'Idade'] if col in df_temp.columns])
+    
+    if not df_ready.empty and 'Regiao' in df_ready.columns and 'Idade' in df_ready.columns:
+        print(f"ÈXIT: Dades llistes ({len(df_ready)} files). Generant gràfic...")
+        plot_boxplot_violinplot(df_ready, 'Regiao', 'Idade')
+    else:
+        print("AVÍS: No hi ha dades suficients per al gràfic (possiblement IDADE o REGIAO estan buides).")
+else:
+    print("ERROR CRÍTIC: df_insurance no està disponible o no és un DataFrame.")
 
-""" *Graficar la región(Regiao) en función de los ingresos(Renda), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*"""
-
-plot_boxplot_violinplot(df_insurance, 'Regiao', 'Renda')
+print("Continuant amb la resta de l'script...")
 
 """## Pregunta
 *¿Cómo crees que la eliminación de datos atípicos ha afectado la distribución y los patrones observados en las gráficas? 
