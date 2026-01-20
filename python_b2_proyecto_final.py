@@ -482,9 +482,9 @@ import sys
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    df_retailbank = pd.read_csv("RetailBankEFG.csv")
-    df_investment = pd.read_csv("InvestmentBankCDE.csv")
-    df_insurance = pd.read_csv("InsuranceCompanyABC.csv")
+    df_retailbank = pd.read_csv(r"C:\Users\User\Documents\GitHub\python-b2-final_project-20251-aula1-juliacollbatalle\data\RetailBankEFG.csv")
+    df_investment = pd.read_csv(r"C:\Users\User\Documents\GitHub\python-b2-final_project-20251-aula1-juliacollbatalle\data\InvestmentBankCDE.csv")
+    df_insurance = pd.read_csv(r"C:\Users\User\Documents\GitHub\python-b2-final_project-20251-aula1-juliacollbatalle\data\InsuranceCompanyABC.csv")
 
     print('Fitxers carregats correctament.')    
     print(df_retailbank.head())
@@ -499,14 +499,29 @@ except Exception as e:
 
 """## Pregunta
 *¿Puedes identificar un atributo común entre los diferentes conjuntos de datos que permita juntarlos?*
-Yes, the column 'ID_Client' can be used as a common attribute between the datasets.
+Yes, the column 'ID' can be used as a common attribute between the datasets.
 """
+df_retailbank.columns = df_retailbank.columns.str.strip()
+df_investment.columns = df_investment.columns.str.strip()
+df_insurance.columns = df_insurance.columns.str.strip()
 
-# Join the dataframes using the common column 'ID_Client'
-df_consolidat = df_retailbank.merge(df_investment, on='ID_Client', how='outer')
-df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
+# Join the dataframes using the common column 'ID'
+df_consolidat = df_retailbank.merge(df_investment, left_on='ID_Client', right_on='ID', how='outer')
 
-print("Dimensions of dataset are consolidated:", df_consolidat.shape)
+#After the first merge, 'ID_Client' and 'ID' exist, but we do not require the last column anymore since it is duplicated
+if 'ID' in df_consolidat.columns:
+    df_consolidat = df_consolidat.drop(columns=['ID'])
+
+#Second merge
+if 'ID' in df_insurance.columns:
+    df_consolidat = df_consolidat.merge(df_insurance, left_on='ID_Client', right_on='ID', how='outer')
+    if 'ID' in df_consolidat.columns:
+        df_consolidat = df_consolidat.drop(columns=['ID'])
+else:
+    df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
+
+print("Merge completat amb èxit!")
+print(df_consolidat.head())
 
 #To know the quantity of files per each DataFrame
 rows_retail = len(df_retailbank)
