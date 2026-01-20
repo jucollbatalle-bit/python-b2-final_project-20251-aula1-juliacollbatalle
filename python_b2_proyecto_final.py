@@ -505,22 +505,25 @@ df_retailbank.columns = df_retailbank.columns.str.strip()
 df_investment.columns = df_investment.columns.str.strip()
 df_insurance.columns = df_insurance.columns.str.strip()
 
-# Join the dataframes using the common column 'ID'
-df_consolidat = df_retailbank.merge(df_investment, left_on='ID_Client', right_on='ID', how='outer')
-
-#After the first merge, 'ID_Client' and 'ID' exist, but we do not require the last column anymore since it is duplicated
-if 'ID' in df_consolidat.columns:
-    df_consolidat = df_consolidat.drop(columns=['ID'])
-
-#Second merge
+# 2. Forcem el nom de la clau en tots els fitxers
+# (Si a Investment es diu 'ID', el canviem a 'ID_Client' i així amb tots)
+if 'ID' in df_investment.columns:
+    df_investment = df_investment.rename(columns={'ID': 'ID_Client'})
 if 'ID' in df_insurance.columns:
-    df_consolidat = df_consolidat.merge(df_insurance, left_on='ID_Client', right_on='ID', how='outer')
-    if 'ID' in df_consolidat.columns:
-        df_consolidat = df_consolidat.drop(columns=['ID'])
-else:
-    df_consolidat = df_consolidat.merge(df_insurance, on='ID_Client', how='outer')
+    df_insurance = df_insurance.rename(columns={'ID': 'ID_Client'})
+if 'ID' in df_retailbank.columns:
+    df_retailbank = df_retailbank.rename(columns={'ID': 'ID_Client'})
 
-print("Merge completat amb èxit!")
+# 3. VERIFICACIÓ: Si això falla aquí, sabrem per què
+print(f"Columna ID_Client a Retail? {'ID_Client' in df_retailbank.columns}")
+print(f"Columna ID_Client a Investment? {'ID_Client' in df_investment.columns}")
+print(f'Columna ID_Client a Insurance? {'ID_Client' in df_insurance.columns}')
+
+# 4. El Merge definitiu 
+df_consolidat = pd.merge(df_retailbank, df_investment, on='ID_Client', how='outer')
+df_consolidat = pd.merge(df_consolidat, df_insurance, on='ID_Client', how='outer')
+
+print("MERGE FINALITZAT CORRECTAMENT!")
 print(df_consolidat.head())
 
 #To know the quantity of files per each DataFrame
@@ -534,7 +537,7 @@ print(f"Quantitat de registres a Insurance Company: {rows_insurance}")
 
 """## Pregunta
 Indica cuál es la cantidad de registros en cada conjunto de datos.
-MIRAR-HO AMB LES DADES QUAN ES CORRI EL PROGRAMA
+There are 10082 registers in each dataset.
 
 *¿Qué conclusiones puedes sacar luego de observar los resultados?*
 Usually, RetailBankEFG has more registers since it is the main base. 
@@ -604,9 +607,9 @@ def check_duplicates(data_frame, column):
 
 """*Imprime la cantidad de filas duplicadas para df_retailbank, df_investment y df_insurance*"""
 
-print(f'Duplicates in Retail: {check_duplicates(df_retailbank, 'client_id')}')
-print(f'Duplicates in Investment: {check_duplicates(df_investment, 'client_id')}')
-print(f'Duplicates in Insurance: {check_duplicates(df_insurance, 'client_id')}')
+print(f"Duplicates in Retail: {check_duplicates(df_retailbank, 'ID_Client')}")
+print(f"Duplicates in Investment: {check_duplicates(df_investment, 'ID_Client')}")
+print(f"Duplicates in Insurance: {check_duplicates(df_insurance, 'ID_Client')}")
 
 """## Pregunta
 ¿Existen datos duplicados?
