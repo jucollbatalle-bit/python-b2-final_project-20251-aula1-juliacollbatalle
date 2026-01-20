@@ -985,33 +985,33 @@ En las siguientes gráficas, puedes observar las diferencias con respecto a las 
 
 *Graficar la región(Regiao) en función de los ingresos(Renda), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*"""
 
-# --- REPARACIÓ FINAL ---
-print("Iniciant anàlisi de gràfics final...")
+# --- FINAL REPAIR ---
+print("Starting final analisis of graphics...")
 
-# 1. Comprovem si df_insurance existeix i té dades
+# 1. Checking if df_insurance exists and contains data
 if 'df_insurance' in locals() and isinstance(df_insurance, pd.DataFrame):
-    # Intentem netejar les dades sense sobreescriure el DF original de moment
     df_temp = df_insurance.copy()
     
-    # Verifiquem noms de columnes per evitar KeyErrors
-    print(f"Columnes detectades: {df_temp.columns.tolist()}")
+    # Cheking columns names to avoid KeyErrors
+    print(f"Current columns: {df_temp.columns.tolist()}")
     
-    # Forcem la conversió a número
+    # Forcing conversion to number
     if 'Idade' in df_temp.columns:
         df_temp['Idade'] = pd.to_numeric(df_temp['Idade'], errors='coerce')
     
-    # Netegem files buides
+    # Cleaning empty files
+
     df_ready = df_temp.dropna(subset=[col for col in ['Regiao', 'Idade'] if col in df_temp.columns])
     
     if not df_ready.empty and 'Regiao' in df_ready.columns and 'Idade' in df_ready.columns:
-        print(f"ÈXIT: Dades llistes ({len(df_ready)} files). Generant gràfic...")
+        print(f"SUCCESS: Data is ready ({len(df_ready)} files). Creating graphic...")
         plot_boxplot_violinplot(df_ready, 'Regiao', 'Idade')
     else:
-        print("AVÍS: No hi ha dades suficients per al gràfic (possiblement IDADE o REGIAO estan buides).")
+        print("WARNING: There is not enough data for the graph (possibly IDADE or REGIAO are empty).")
 else:
-    print("ERROR CRÍTIC: df_insurance no està disponible o no és un DataFrame.")
+    print("CRITICAL ERROR: df_insurance is not available or it is not a DataFrame.")
 
-print("Continuant amb la resta de l'script...")
+print("Continuing with the rest of the script...")
 
 """## Pregunta
 *¿Cómo crees que la eliminación de datos atípicos ha afectado la distribución y los patrones observados en las gráficas? 
@@ -1045,7 +1045,7 @@ class DataScaleImputer(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         data = X.copy()  # Make a copy of the input DataFrame to avoid modifying the original
-
+    
         # Create a ColumnTransformer that will apply StandardScaler only to the specified columns
         from sklearn.compose import ColumnTransformer
 
@@ -1068,7 +1068,12 @@ class DataScaleImputer(BaseEstimator, TransformerMixin):
 """*Ejecuta la transformación utilizando la clase `DataScaleImputer` y asigna el resultado a `df_insurance`*"""
 
 scaler_imputer = DataScaleImputer(columns=['Idade', 'Renda'])
-df_insurance = scaler_imputer.fit_transform(df_insurance)
+df_aux = df_insurance[['Idade', 'Renda']].copy()
+df_aux_escalat = scaler_imputer.fit_transform(df_aux)
+
+df_insurance[['Idade', 'Renda']] = df_aux_escalat[['Idade', 'Renda']]
+
+print("✓ Estandardització de df_insurance completada sense errors de dimensions.")
 
 """*Imprime las estadísticas básicas del conjunto de datos df_insurance, ubásicas utilizando el método `describe()`*"""
 
@@ -1089,6 +1094,14 @@ El resultado final se asignará a la variable `data_frame_merged`. A continuaci�
 *Utiliza la función `merge` de Pandas para fusionar los conjuntos de datos en uno solo, asignándolo a la variable `data_frame_merged`.*
 """
 
+dataframes = [df_retailbank, df_investment, df_insurance]
+for df in dataframes:
+    if 'ID_Client' in df.columns:
+        df.rename(columns={'ID_Client': 'client_id'}, inplace=True)
+    # Si per algun motiu és l'índex, el convertim en columna
+    if df.index.name == 'ID_Client' or df.index.name == 'client_id':
+        df.reset_index(inplace=True)
+
 data_frame_merged = df_retailbank.merge(df_investment, on='client_id', how='left')
 data_frame_merged = data_frame_merged.merge(df_insurance, on='client_id', how='left')
 
@@ -1097,7 +1110,7 @@ data_frame_merged = data_frame_merged.merge(df_insurance, on='client_id', how='l
 print("First 10 records of the unified dataset:")
 print(data_frame_merged.head(10)) #The first 10 registers are printed to verify function 'merge' has worked properly
 
-print(f"Total of registers after merge: {len(data_frame_merged)}") #Now we print all registers
+print(f"✓ Merge finalitzat. Total registres: {len(data_frame_merged)}") #Now we print all registers
 
 
 """*Observamos una visión estadística rápida de los datos mediante la función `describe`.*"""
@@ -1116,7 +1129,6 @@ Como has notado, se presentan ciertos inconvenientes en los nombres de las colum
 """
 
 data_frame_merged = data_frame_merged.rename(columns = lambda x:re.sub('[^A-Za-z0-9_]+', '', x))
-data_frame_merged.info()
 print("\nInformació final del DataFrame (tramitament de dades finalitzat):")
 data_frame_merged.info()
 
