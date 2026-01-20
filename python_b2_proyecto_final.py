@@ -613,7 +613,7 @@ print(f"Duplicates in Insurance: {check_duplicates(df_insurance, 'ID_Client')}")
 
 """## Pregunta
 ¿Existen datos duplicados?
-Yes, according to the Terminal there are 552 duplicated data.
+Yes, according to the Terminal there are 552 rows duplicated in each dataset.
 
 ## Inconsistencias
 En esta sección, se propondrán varios métodos para identificar inconsistencias en los datos. Primero, vamos a revisar las estadísticas básicas. Para ello, utilizaremos la función `describe()`.
@@ -674,8 +674,8 @@ print('Unique values in Insurance:\n', get_value_counts_non_numeric_columns(df_i
 """
 
 print("Tipus de dades a Retail Bank:\n", df_retailbank.dtypes)
-print("\nTipus de dades a Investment Bank:\n", df_investment.dtypes)
-print("\nTipus de dades a Insurance Company:\n", df_insurance.dtypes)
+print("Tipus de dades a Investment Bank:\n", df_investment.dtypes)
+print("Tipus de dades a Insurance Company:\n", df_insurance.dtypes)
 
 """## Pregunta
 *¿Qué puedes concluir respecto de todas las variables que no son numéricas?*
@@ -951,7 +951,8 @@ class OutlierRemover(BaseEstimator, TransformerMixin):
 
 outlier_remover = OutlierRemover(threshold=1.5)
 
-df_insurance = outlier_remover.fit_transform(df_insurance)
+df_insurance_numeric = df_insurance.select_dtypes(include=['number'])
+df_insurance = outlier_remover.fit_transform(df_insurance_numeric)
 
 print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
 
@@ -978,7 +979,10 @@ En las siguientes gráficas, puedes observar las diferencias con respecto a las 
 
 *Graficar la región(Regiao) en función de la edad(Idade), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*
 """
-
+df_insurance = df_insurance.dropna(subset=['Regiao', 'Idade'])
+df_insurance['Idade'] = pd.to_numeric(df_insurance['Idade'], errors='coerce')
+df_insurance = df_insurance.dropna(subset=['Idade'])
+    
 plot_boxplot_violinplot(df_insurance, 'Regiao', 'Idade')
 
 """ *Graficar la región(Regiao) en función de los ingresos(Renda), del conjunto de datos `df_insurance`, utilizando la función `plot_boxplot_violinplot`.*"""
@@ -1483,13 +1487,14 @@ Aquí está la corrección:
 Ahora vamos a desarrollar validaciones para ver cuáles características son más relevantes para el modelo. Para esto, debes a implementar una función llamada  `plot_correlations` que te permita graficar las correlaciones del DataFrame `data_frame_tipo_financiamiento`.
 """
 
-def plot_correlations(df_temp):
-    plt.figure(figsize=(15, 10))
+def plot_correlations(df):
+    numeric_df = df.select_dtypes(include=[np.number])
+
     # Calculate the correlation matrix
-    corr_matrix = df_temp.corr()
+    plt.figure(figsize=(10, 8))
     # Now we draw the Heatmap
-    sns.heatmap(corr_matrix, annot=False, cmap='coolwarm', linewidths=0.5)
-    plt.title("Matriu de Correlació de les variables")
+    sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', linewidths=0.5)
+    plt.title("Matriu de Correlació")
     plt.show()
     pass
 
