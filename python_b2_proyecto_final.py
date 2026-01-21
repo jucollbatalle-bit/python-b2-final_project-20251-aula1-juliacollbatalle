@@ -351,7 +351,7 @@ def plot_accuracy_scores(estimator, train_x, train_y, test_x, test_y, nparts=5, 
     # Return the accuracy scores for training data
     return train_scores
 
-def startified_train_test_split(X, Y, n_splits=1, test_size=0.2, random_state=42):
+def startified_train_test_split(X, y, n_splits=1, test_size=0.2, random_state=42):
   # Assuming X and y are your feature matrix and target variable respectively
 
   # Initialize StratifiedShuffleSplit
@@ -1439,7 +1439,8 @@ y = data_frame_tipo_financiamiento['tipo_financiamiento']
 # Split the data into training and testing sets using startified_train_test_split
 # You can adjust the test_size parameter as needed
 # 'random_state' ensures reproducibility of results
-X_train, X_test, y_train, y_test = startified_train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = startified_train_test_split(
+    X, y, test_size=0.2, random_state=42)
 
 # Create the custom model
 # You can customize the parameters based on your requirements
@@ -1474,7 +1475,9 @@ plot_confusion_matrix(cm, mapping=tipo_financiamiento_mapping, title='Confusion 
 # Assuming your data is stored in a DataFrame called 'data_frame_tipo_financiamiento'
 # and the target variable is in a column called 'tipo_financiamiento'
 # Replace 'data_frame_tipo_financiamiento' and 'tipo_financiamiento' with your actual DataFrame and column names
-X = data_frame_tipo_financiamiento.drop(columns=['tipo_financiamiento'])  # Features
+data_frame_tipo_financiamiento = data_frame_tipo_financiamiento.dropna()
+
+X = data_frame_tipo_financiamiento.drop(columns=['tipo_financiamiento']).select_dtypes(include=['number'])  # Features
 y = data_frame_tipo_financiamiento['tipo_financiamiento']  # Target variable
 
 # Split the data into training and testing sets
@@ -1495,6 +1498,7 @@ lr_model.fit(X_train, y_train)
 
 # Make predictions on the testing data
 y_pred = lr_model.predict(X_test)
+print('Training completed successfully!')
 
 """### **Evaluación del modelo - (LogisticRegression)**"""
 
@@ -1560,7 +1564,7 @@ def get_most_important_features(correlation_matrix, target_column, n=5):
     # Exclude the target variable itself
     correlation_with_target = correlation_with_target.drop(target_column)
 
-    # Get the top N most important features
+    # Get the top N most important features 
     top_features = correlation_with_target.head(n).index.tolist()
 
     return top_features
@@ -1571,7 +1575,7 @@ def get_most_important_features(correlation_matrix, target_column, n=5):
 
 correlation_matrix = data_frame_tipo_financiamiento.select_dtypes(include=['number']).corr()
 
-most_important_features = get_most_important_features(correlation_matrix, 'target_column', n=6)
+most_important_features = get_most_important_features(correlation_matrix, 'tipo_financiamiento', n=6)
 
 print("The 6 most relevant columns are:")
 print(most_important_features)
@@ -1604,11 +1608,11 @@ def create_pca_model(X_train, n_components):
     """
     # Instantiate PCA
     pca_model = PCA(n_components=n_components)
-    pca_model = None
+    # pca_model = None
 
     # Fit PCA to the training data and transform features
     X_principal = pca_model.fit_transform(X_train)
-    X_principal = None
+    # X_principal = None
     X_principal = pd.DataFrame(data=X_principal)
 
     # Return pca_model,X_principal
