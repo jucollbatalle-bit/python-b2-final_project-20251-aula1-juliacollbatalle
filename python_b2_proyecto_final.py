@@ -383,6 +383,7 @@ def plot_pca_cumulative_variance(pca):
     # Create the visualization plot
     plt.bar(range(1,len(exp_var_pca)+1), exp_var_pca, alpha=0.5, align='center', label='Individual explained variance')
     plt.step(range(1,len(cum_sum_eigenvalues)+1), cum_sum_eigenvalues, where='mid',label='Cumulative explained variance')
+    plt.title('PCA Individual and Cumulative Explained Variance')
     plt.ylabel('Explained variance ratio')
     plt.xlabel('Principal component index')
     plt.legend(loc='best')
@@ -484,16 +485,24 @@ Comencemos importando los diferentes conjuntos de datos como dataframes utilizan
 import pandas as pd
 import os
 import sys
+import warnings
+
+warnings.filterwarnings('ignore') #So the terminal looks cleaner when performing the Logistic Regression
 
 # This line helps Python to find the files
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    df_retailbank = pd.read_csv(r"C:\Users\User\Documents\GitHub\python-b2-final_project-20251-aula1-juliacollbatalle\data\RetailBankEFG.csv")
-    df_investment = pd.read_csv(r"C:\Users\User\Documents\GitHub\python-b2-final_project-20251-aula1-juliacollbatalle\data\InvestmentBankCDE.csv")
-    df_insurance = pd.read_csv(r"C:\Users\User\Documents\GitHub\python-b2-final_project-20251-aula1-juliacollbatalle\data\InsuranceCompanyABC.csv")
+    df_retailbank = pd.read_csv("data/RetailBankEFG.csv")
+    df_investment = pd.read_csv("data/InvestmentBankCDE.csv")
+    df_insurance = pd.read_csv("data/InsuranceCompanyABC.csv")
 
-    print('Fitxers carregats correctament.')    
+    print('Fitxers carregats correctament.')   
+
+    df_retailbank.columns = df_retailbank.columns.str.strip()
+    df_investment.columns = df_investment.columns.str.strip()
+    df_insurance.columns = df_insurance.columns.str.strip()
+
     print(df_retailbank.head())
 
 except FileNotFoundError as e:
@@ -1109,6 +1118,7 @@ dataframes = [df_retailbank, df_investment, df_insurance]
 for df in dataframes:
     if 'ID_Client' in df.columns:
         df.rename(columns={'ID_Client': 'client_id'}, inplace=True)
+
     if df.index.name == 'ID_Client' or df.index.name == 'client_id':
         df.reset_index(inplace=True)
 
