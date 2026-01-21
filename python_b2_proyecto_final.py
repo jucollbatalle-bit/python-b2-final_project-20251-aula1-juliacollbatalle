@@ -969,9 +969,6 @@ outlier_remover = OutlierRemover(threshold=1.5, columns=columns_with_outliers)
 
 df_insurance = outlier_remover.fit_transform(df_insurance)
 
-# print("Current columns:", df_insurance.columns.tolist())
-# print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
-
 """## Pregunta
 Después de eliminar los datos atípicos, ¿cuántos registros tiene ahora el DataFrame `df_insurance`?
 Dimensions of the DataFrame of 'df_insurance' are (9717, 11)
@@ -1007,14 +1004,19 @@ if 'df_insurance' in locals() and isinstance(df_insurance, pd.DataFrame):
     # Forcing conversion to number
     if 'Idade' in df_temp.columns:
         df_temp['Idade'] = pd.to_numeric(df_temp['Idade'], errors='coerce')
-    
+    if 'Renda' in df_temp.columns:
+        df_temp['Renda'] = pd.to_numeric(df_temp['Renda'], errors='coerce')
+
     # Cleaning empty files
-    df_ready = df_temp.dropna(subset=[col for col in ['Regiao', 'Idade'] if col in df_temp.columns])
+    df_ready = df_temp.dropna(subset=[col for col in ['Regiao', 'Idade', 'Renda'] if col in df_temp.columns])
     
-    if not df_ready.empty and 'Regiao' in df_ready.columns and 'Idade' in df_ready.columns:
-        print(f"SUCCESS: Data is ready ({len(df_ready)} files). Creating graphic...")
-        plot_boxplot_violinplot(df_ready, 'Regiao', 'Idade')
-        plot_boxplot_violinplot(df_ready, 'Regiao', 'Renda')
+    if not df_ready.empty and 'Regiao' in df_ready.columns:
+        if 'Idade' in df_ready.columns:
+           print(f"SUCCESS: Creating graphic Idade and Regiao...")
+           plot_boxplot_violinplot(df_ready, 'Regiao', 'Idade')
+        if 'Renda' in df_ready.columns:
+            print(f"SUCCESS: Creating graphic Renda and Regiao...")
+            plot_boxplot_violinplot(df_ready, 'Regiao', 'Renda')
     else:
         print("WARNING: There is not enough data for the graph (possibly IDADE or REGIAO are empty).")
 else:
@@ -1107,7 +1109,6 @@ dataframes = [df_retailbank, df_investment, df_insurance]
 for df in dataframes:
     if 'ID_Client' in df.columns:
         df.rename(columns={'ID_Client': 'client_id'}, inplace=True)
-    # Si per algun motiu és l'índex, el convertim en columna
     if df.index.name == 'ID_Client' or df.index.name == 'client_id':
         df.reset_index(inplace=True)
 
