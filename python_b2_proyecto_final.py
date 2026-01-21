@@ -474,9 +474,22 @@ La preparación de datos es un paso crucial en el proceso de análisis de datos.
 ##Recopilar Información
 ## Preguntas
 * *¿Cuáles son los desafíos clave al integrar y analizar datos de diferentes instituciones financieras para desarrollar sistemas de recomendación de seguros?*
+Some key challenges when integrating and analyzing data from different financial institutions can be:
+- Data Heterogeneity: Different institutions use different naming conventions, formats, and scales.
+- Data Privacy and Security: Ensuring compliance with regulations while sharing sensitive financial information across platforms.
+- Sparsity and Missing Values: A customer might be active in the Retail Bank but have no record in the Investment or Insurance datasets, making it difficult to create a complete user profile for recommendations.
+
 * *¿De qué manera podría su participación en el desarrollo de nuevas fuentes de información de seguros en el marco de Open Finance promover la transparencia y autonomía de los usuarios del sistema financiero?*
+Participation in developing new insurance information sources promotes user empowerment by:
+- Data Ownership: users regain control over their financial 'footprint', choosing who can access their data and for what purpose.
+- Informed Decision Making: users can effortlessly compare products, leading to more competitive pricing and better-suited coverage.
+- Reduced Information Asymetry: Open Finance levels the playing field between the institution and the consumer, as the consumer has a clear, transparent view of all available market options.
+
 * *¿Cuál es la similitud entre Open Finance y otras fuentes de datos financieros abiertos, como Open Banking y Open Insurance, y cómo benefician a los usuarios del sistema financiero en términos de transparencia y acceso a información?*
+The main similarity remains in the standarization and interoperability of data sharing via APIs. Users get benefited since they all increase transparency by making data portable. Also, this eliminates the 'lock-in' effect where a user stays with a sub-optimal bank or insurer simply because it is too difficult to move their data elsewhere.
+
 * *¿Qué aspectos clave deberías revisar al explorar los datos de GFT Open Finance para entender su contenido, formato y posibles problemas, y cómo estos podrían afectar el desarrollo de modelos de machine learning para recomendaciones de seguros?*
+The key aspects would be: data integiry and consistency, data types and formats, class imbalance and outliers. Neglecting those aspects lead to 'Garbage In, Garbage Out'. If the input data is messy or unscaled, the model will fail to find real patterns which leads into inaccurate recommendations.
 
 ## Exploración Inicial
 
@@ -592,9 +605,7 @@ print('Nuls a Insurance:', get_nan_values(df_insurance))
 
 """## Pregunta
 *¿Existen valores faltantes en los datos?*
-
-"" Answere
-they usually appear after the data integration between different institutions, since some clients only have presence in one or two databases. However in this case it appears to not be any missing data. ""
+They usually appear after the data integration between different institutions, since some clients only have presence in one or two databases. However in this case it appears to not be any missing data. ""
 
 ## Duplicados
 Vamos a detectar si existen filas duplicadas que pueden distorsionar los análisis. 
@@ -780,10 +791,11 @@ plt.show()
 
 """## Preguntas
 * *¿Cuál es la distribución de datos sugerida?*
-A distribution is expected where variables such as age follow a Gaussian bell (normal) and income shows an asymmetric distribution to the right (showing a few customers with very high incomes).
+Ideally, variables such as 'Idade' are expected to follow a Gaussian (normal) distribution. In contrast, income (here called 'Renda') typically shows a right-skewed distribution.
+However, in this case both graphs show an extremely right-skewed and compressed, since data has not been cleaned nor treated yet.
 
 * *¿Existen datos atípicos en el conjunto de datos?* *¿Cómo podrías corregir estos datos? Justifica tu respuesta*.
-If isolated points appear outside the 'whiskers' of the box plot, they are outliners. They can be corrected by truncation (winsorizing), eliminating these records if they are errors, or replacing them with the mean/median if they are plausible but extreme values.
+Yes, some isolated points appear outside the 'whiskers' of the box plot, which are called outliners. They can be corrected by truncation (winsorizing), eliminating these records if they are errors, or replacing them with the mean/median if they are plausible but extreme values.
 
 # **Pregunta 2 - Limpieza y tratamiento de Datos**
 
@@ -1426,6 +1438,7 @@ Utiliza técnicas de validación cruzada para obtener estimaciones más robustas
 
 ## Pregunta
 *¿Cuál es el tipo de problema que estás enfrentando: clasificación o regresión? Imprime o grafica el conteo de valores que corresponde a la columna `data_frame_tipo_financiamiento`.*
+It consist of a classification problem since the target variable consists of dicrete categories (different types of insurance products). 
 """
 
 plt.figure(figsize=(10,6))
@@ -1472,11 +1485,11 @@ rf_model.fit(X_train, y_train)
 # Make predictions on the testing data
 y_pred = rf_model.predict(X_test)
 
-"""### **Evaluación del modelo - (Nombre Modelo)**"""
+"""### **Evaluación del modelo - (Random Forest)**"""
 
 # Evaluate accuracy the model
 accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy del model Random Forest: {accuracy}")
+print(f"Accuracy of Random Forest model: {accuracy}")
 
 # Plot accuracy the model over the time - use plot_accuracy_scores
 plot_accuracy_scores(rf_model,X_train,y_train,X_test,y_test,nparts=5,jobs=2)
@@ -1524,7 +1537,7 @@ print('Training completed successfully!')
 
 # Evaluate accuracy the model
 accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy:", accuracy)
+print("Accuracy of LogisticRegression model:", accuracy)
 
 # Plot accuracy the model over the time
 plot_accuracy_scores(lr_model,X_train,y_train,X_test,y_test,nparts=5,jobs=2)
@@ -1538,7 +1551,18 @@ plot_confusion_matrix(confusion_matrix(y_test, y_pred),tipo_financiamiento_mappi
 
 """## Preguntas
 * *¿Puedes comparar los modelos y determinar cuál de ellos tiene un mejor rendimiento en términos de exactitud?*
+According to the terminal, the results are:
+- Accuracy of Random Forest model: 0.7521773555027712
+- Accuracy of LogisticRegression model: 0.7460252751732572
+Finally, it can be concluded that the Random Forest model is more accurate than the LogisticRegression one.
+
 * *¿Logran los modelos etiquetar todas las clases de forma precisa? ¿Qué estrategias podrían aplicarse para mejorar este aspecto?*
+Not at all, usually most models struggle to lable the 'minority classes'. 
+Some strategies for improvement would be:
+- Oversampling (SMOTE)
+- Class Weighting
+- Hyperparameter Tuning
+- Feature Engineering
 
 ## Extracción de características y Análisis de Componentes Principales(PCA)
 
@@ -1562,6 +1586,7 @@ plot_correlations(data_frame_tipo_financiamiento)
 
 """## Pregunta
 * *¿Puedes identificar cuáles columnas son más relevantes y por qué?*
+The 6 most relevant columns are ['Emprestimo_limite_especial', 'Emprestimo_consignado', 'Emprestimo_pessoal', 'segurovidaPF', 'SeguroResidencial', 'seguroauto']. 
 
 La siguiente función, `get_most_important_features`, nos permite extraer aquellas n columnas más relevantes a partir de la matriz de correlación.
 """
@@ -1658,6 +1683,8 @@ plot_elbow_curve_pca(X_principal)
 
 """## Pregunta
 *Primero, investiga para qué sirve la curva conocida como codo (elbow curve). Luego, responde a la pregunta: ¿Cuántos componentes principales (columnas) puedes sugerir que sean utilizados por algún modelo de Machine Learning?*
+The elbow curve is a heuristic used to determine the optimal number of components or clusters in a dataset. 
+I suggest using between 3 and 5 principal components (or columns) due to the variance threshold, dimensionality reduction and the efficiency of the model. However in this case a number of components equal to 2 has been established.
 
 *Establece el valor para la variable `n_components_pca`, luego ejecuta el modelo de aprendizaje, que incluye una tarea de reducción de la dimensionalidad mediante PCA (Análisis de Componentes Principales).*
 """
@@ -1712,9 +1739,6 @@ X = data_frame_tipo_financiamiento.drop(columns=['tipo_financiamiento'])
 y = data_frame_tipo_financiamiento['tipo_financiamiento']
 
 """A continuación, se muestra una gráfica que ilustra la presencia de datos desbalanceados.
-
-
-
 """
 
 conteo_tipo_financiamiento_label = y.value_counts().rename(index=tipo_financiamiento_mapping)
@@ -1766,7 +1790,6 @@ y_reshaped.value_counts()
 
 """*Separa los datos en conjuntos de entrenamiento y test utilizando la función `startified_train_test_split()`. Luego, implementa un modelo que haga uso del siguiente clasificador. Puedes probar modificando los hiperparámetros y evaluar los resultados. También puedes optar por modificar los parámetros de las clases `RandomUnderSampler` y `SMOTE` del paso anterior.*
 
-
 ```
 GradientBoostingClassifier(
         ccp_alpha=0.0,
@@ -1790,7 +1813,6 @@ GradientBoostingClassifier(
         verbose=0,
         warm_start=False)
 ```
-
 
 """
 
@@ -1858,11 +1880,11 @@ plot_confusion_matrix(confusion_matrix(y_test, y_pred),tipo_financiamiento_mappi
 
 """# Pregunta 4
 * *¿Cuál de los modelos consideras que es más eficiente en términos de rendimiento y por qué?*
-Efficiency must be measured both in terms of predictive accuracy and computational cost. Generally, Random Forest tends to be more efficient for this type of financial dataset because it handles non-linear relationships and categorical data effectively without requiring extensice scaling.
-While SVM (Support Vector Machines) can be very precise, it is computationally more expensive as the dataset grows. Therefore, if the performance (F1-Score and Accuracy) is similar, Random Forest is usually the more efficient choice for production environments.
+Efficiency must be measured both in terms of predictive accuracy and computational cost. In this case, Random Forest is more efficient for this type of financial dataset (as it has been previously mentioned, the accuary of Random Forest is higher than the LogisticRegression model).
+Nontheless, Logistic Regression is faster since it requires less computational power (CPU) and time.
 
 * *Luego de evaluar los diferentes modelos, como científico de datos, ¿cuál sugerirías implementar y por qué? Justifica tu respuesta.*
-I would suggest implementing the Random Forest Classifier for the next three reasons:
+I would suggest implementing the Random Forest for the next three reasons:
 - Robustness: it is less prone to overfitting compared to single decision trees thanks to ensamble averaging.
 - Feature Importance: it provides clear insights into which variables are driving the financing recommendations, which is crucial for financial transparency.
 - Handling mix data: it performs very well with the mix of numerical and encoded categorical variables we processed in Pregunta 2.
@@ -1877,7 +1899,7 @@ model = RandomForestClassifier(class_weight='balanced', n_estimators=100)
 model.fit(X_train, y_train)
 
 * *Investiga qué son los modelos de ensamble e implementa un corto ejemplo.*
-Ensamble models are a machine learning approach that combines multiple individual modles (often called 'weak learners') to create a single 'strong learner' with better predictive performances. The two main types are Bagging (like Random Forest) and Boosting (like XGBoost).
+Ensamble models are a Machine Learning approach that combines multiple individual modles (often called 'weak learners') to create a single 'strong learner' with better predictive performances. The two main types are Bagging (like Random Forest) and Boosting (like XGBoost).
 
 An example of ensamble model (Voting Classifier):
 from sklearn.ensemble import VotingClassifier
