@@ -740,24 +740,33 @@ To evaluate non numerical data I would suggest to create visualizations, since t
 Heatmaps could be aswell used to observe correlation between numerical variables or Scatter plots to se any relation between income and age.
 
 3. *¿Existe un desbalance en los datos, es decir, existen más tipos que corresponden a una clase? ¿Cuál es la clase y cómo crees que esto puede afectar al construir modelos de machine learning?*
-NOTA PERSONAL: S'HA D'OBSERVAR EL GRÀFIC QUAN ES GENERI!!!!
+Yes, there is a very clear imbalance (known as Class Imbalance). In the datasets, the vast majority of customers do not have any type of active financing. 
+The dominant class is "None" (or the value False in the individual graphs). 
+As we have seen in the distributions of tipo_casa, tipo_carro or emprestimo_pessoal, the volume of data without financing exceeds 8,000 samples, while the classes with financing (such as "Solo Casa" or "Both") are very small (below 2,000 or even less).
+
+This imbalance affects the model in three main ways:
+- Model Bias: The Machine Learning model will have a natural tendency to always predict the majority class ("None"). Since most customers have no financing, the model "learns" that saying that no one has anything is the easiest way to get it wrong.
+- Accuracy Trap: We could get a very high Accuracy (for example, 85% correct), but it would be misleading. 
+- Difficulty learning minority classes.
+Finally, I would like to clarify why the boxplot in Renda and Genero have such a specific look. In the case of Renda, the 'compressed' appearance occurs because only a few clients exceed the average income significantly, creating extreme outliers that stretch the scale.
+In the case of Genero, the boxplot appears as a solid block because it is a binary variable (encoded as 0 and 1); therefore it does not represent a continuous range but two distinct categories, making the traditional boxplot structure (wishkers and quartiles) non-informative.
 
 ### Analizar Patrones Anómalos:
-Para realizar el análisis de patrones anómalos, utilizarás la función `plot_boxplot_violinplot`.
+Para realizar el análisis de patrones anómalos, utilizarás la función `plot_boxplot_violinplot`. 
 
 *Graficar la región(Regiao) en función de la edad(Idade), del conjunto de datos `df_insurance`.*
 """
 
 plt.figure(figsize=(10, 6))
-sns.violinplot(x='Regiao', y='Idade', data=df_insurance)
-plt.title("Distribució d'Edat per Regió (Insurance)")
+sns.violinplot(x='Regiao', y='Idade', data=df_insurance, inner='box')
+plt.title("Violin plot with Boxplot inside: Idade per Regiao")
 plt.show()
 
 """ *Graficar la región(Regiao) en función de la edad(Renda), del conjunto de datos `df_insurance`.*"""
 
 plt.figure(figsize=(10, 6))
-sns.boxplot(x='Regiao', y='Renda', data=df_insurance)
-plt.title("Distribució de Renda per Regió (Insurance)")
+sns.violinplot(x='Regiao', y='Renda', data=df_insurance, inner='box')
+plt.title("Violin plot with Boxplot inside: Renda per Regiao")
 plt.show()
 
 """## Preguntas
@@ -960,8 +969,8 @@ outlier_remover = OutlierRemover(threshold=1.5, columns=columns_with_outliers)
 
 df_insurance = outlier_remover.fit_transform(df_insurance)
 
-print("Current columns:", df_insurance.columns.tolist())
-print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
+# print("Current columns:", df_insurance.columns.tolist())
+# print(f'Dimensions of df_insurance after eliminating outliers: {df_insurance.shape}')
 
 """## Pregunta
 Después de eliminar los datos atípicos, ¿cuántos registros tiene ahora el DataFrame `df_insurance`?
@@ -1000,12 +1009,12 @@ if 'df_insurance' in locals() and isinstance(df_insurance, pd.DataFrame):
         df_temp['Idade'] = pd.to_numeric(df_temp['Idade'], errors='coerce')
     
     # Cleaning empty files
-
     df_ready = df_temp.dropna(subset=[col for col in ['Regiao', 'Idade'] if col in df_temp.columns])
     
     if not df_ready.empty and 'Regiao' in df_ready.columns and 'Idade' in df_ready.columns:
         print(f"SUCCESS: Data is ready ({len(df_ready)} files). Creating graphic...")
         plot_boxplot_violinplot(df_ready, 'Regiao', 'Idade')
+        plot_boxplot_violinplot(df_ready, 'Regiao', 'Renda')
     else:
         print("WARNING: There is not enough data for the graph (possibly IDADE or REGIAO are empty).")
 else:
